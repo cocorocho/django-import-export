@@ -309,7 +309,6 @@ class ModelResourceTest(TestCase):
         self.assertEqual(
             headers,
             [
-                "published_date",
                 "id",
                 "name",
                 "author",
@@ -318,6 +317,7 @@ class ModelResourceTest(TestCase):
                 "price",
                 "added",
                 "categories",
+                "published_date",
             ],
         )
 
@@ -896,7 +896,7 @@ class ModelResourceTest(TestCase):
         author = Author.objects.create(name="Author")
         self.book.author = author
         resource = B()
-        full_title = resource.export_field(resource.get_fields()[0], self.book)
+        full_title = resource.export_field(resource.get_fields()[1], self.book)
         self.assertEqual(
             full_title, "%s by %s" % (self.book.name, self.book.author.name)
         )

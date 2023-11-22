@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from datetime import date
 
 import tablib
 from core.models import Book
@@ -6,7 +7,7 @@ from core.tests.resources import BookResource
 from core.tests.utils import ignore_widget_deprecation_warning
 from django.test import TestCase
 
-from import_export import exceptions, fields, resources
+from import_export import exceptions, fields, resources, widgets
 
 
 class AfterImportComparisonTest(TestCase):
@@ -81,6 +82,16 @@ class ImportExportFieldOrderTest(TestCase):
             fields = ["id", "price", "name"]
             model = Book
 
+    class DeclaredFieldBookResource(BaseBookResource):
+        published = fields.Field(
+            attribute="published",
+            column_name="published",
+            widget=widgets.DateWidget("%d.%m.%Y")
+        )
+
+        class Meta:
+            model = Book
+        
     def setUp(self):
         super().setUp()
         self.pk = Book.objects.create(name="Ulysses", price="1.99").pk
@@ -156,6 +167,15 @@ class ImportExportFieldOrderTest(TestCase):
         data = self.resource.export()
         target = f"id,price,name\r\n{self.pk},1.99,Ulysses\r\n"
         self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_declared_fields_preserves_export_order(self):
+        # Issue (#1663)
+        declared_field_name = "published"
+        self.resource = ImportExportFieldOrderTest.DeclaredFieldBookResource()
+        export_order = self.resource.get_export_order()
+
+        self.assertEqual(export_order[-1], declared_field_name)
 
 
 class ImportIdFieldsTestCase(TestCase):

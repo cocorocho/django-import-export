@@ -42,6 +42,7 @@ Enhancements
 Fixes
 #####
 
+- fix declaring fields in ModelResource changes export order
 - dynamic widget parameters for CharField fixes 'NOT NULL constraint' error in xlsx (#1485)
 - fix cooperation with adminsortable2 (#1633)
 - Removed unused method ``utils.original()``

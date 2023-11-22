@@ -1366,7 +1366,11 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     )
                 )
 
-            new_class.fields.update(OrderedDict(field_list))
+            # Keep model fields before declared fields
+            new_class.fields = OrderedDict([
+                *field_list,
+                *new_class.fields.items()
+            ])
 
             # add fields that follow relationships
             if opts.fields is not None:
@@ -1414,7 +1418,11 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     )
                     field_list.append((field_name, field))
 
-                new_class.fields.update(OrderedDict(field_list))
+                # Keep model fields before declared fields
+                new_class.fields = OrderedDict([
+                    *field_list,
+                    *new_class.fields.items()
+                ])
 
         return new_class
 
